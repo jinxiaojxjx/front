@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道路结构健康监测和预警平台 - 扩展模块</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind配置和自定义样式 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                        dark: '#1D2129',
+                        light: '#F2F3F5',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        info: '#86909C'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .bg-glass {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .grid-auto-fit {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+            .modal-backdrop {
+                backdrop-filter: blur(4px);
+            }
+            .fade-in {
+                animation: fadeIn 0.3s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            .log-item {
+                transition: background-color 0.2s ease;
+            }
+            .log-item:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 font-inter text-light min-h-screen flex flex-col">
+  
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-white mb-2 flex items-center">
+                <i class="fa fa-plug text-primary mr-3"></i>
+                路网全时空协同引擎
+                <span class="ml-3 text-xs font-normal bg-primary/20 text-primary px-2 py-1 rounded-full">OPEN API</span>
+            </h1>
+            <p class="text-gray-400 max-w-3xl">将道路结构健康监测和预警数据无缝对接至各类业务场景，赋能智慧交通与应急响应</p>
+        </div>
+
+        <!-- 对接概览卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700 card-hover">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">总对接数</p>
+                        <h3 class="text-2xl font-bold text-white">24</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                        <i class="fa fa-link text-primary text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="text-success flex items-center">
+                        <i class="fa fa-arrow-up mr-1"></i> 12%
+                    </span>
+                    <span class="text-gray-400 ml-2">较上月</span>
+                </div>
+            </div>
+
+            <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700 card-hover">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">活跃对接</p>
+                        <h3 class="text-2xl font-bold text-white">18</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
+                        <i class="fa fa-heartbeat text-success text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="text-success flex items-center">
+                        <i class="fa fa-arrow-up mr-1"></i> 8%
+                    </span>
+                    <span class="text-gray-400 ml-2">较上月</span>
+                </div>
+            </div>
+
+            <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700 card-hover">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">数据请求量</p>
+                        <h3 class="text-2xl font-bold text-white">128K+</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                        <i class="fa fa-exchange text-secondary text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="text-success flex items-center">
+                        <i class="fa fa-arrow-up mr-1"></i> 42%
+                    </span>
+                    <span class="text-gray-400 ml-2">较上月</span>
+                </div>
+            </div>
+
+            <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700 card-hover">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">响应成功率</p>
+                        <h3 class="text-2xl font-bold text-white">99.8%</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                        <i class="fa fa-check-circle text-accent text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="text-success flex items-center">
+                        <i class="fa fa-arrow-up mr-1"></i> 0.2%
+                    </span>
+                    <span class="text-gray-400 ml-2">较上月</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 对接场景卡片 -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fa fa-cubes text-primary mr-2"></i>
+                    业务场景对接
+                </h2>
+                <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                    <i class="fa fa-plus mr-2"></i>
+                    新增对接
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 车路协同卡片 -->
+                <div class="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 card-hover" 
+                     onclick="openSceneModal('vehicle-road')"
+                     data-scene="vehicle-road">
+                    <div class="h-40 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
+                        <div class="absolute inset-0 bg-black/30"></div>
+                        <img src="https://picsum.photos/seed/carroad/800/400" alt="车路协同场景图片" class="w-full h-full object-cover mix-blend-overlay">
+                        <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded">
+                            活跃中
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-white mb-2 flex items-center">
+                            <i class="fa fa-car text-primary mr-2"></i>
+                            车路协同
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4">将道路结构数据实时传输至智能网联汽车，提升自动驾驶安全性与道路通行效率</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">实时路况</span>
+                            <span class="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full">道路状态</span>
+                            <span class="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full">预警信息</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <i class="fa fa-clock-o mr-1"></i>
+                                    已对接 128 天
+                                </span>
+                            </div>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能养护卡片 -->
+                <div class="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 card-hover"
+                     onclick="openSceneModal('intelligent-maintenance')"
+                     data-scene="intelligent-maintenance">
+                    <div class="h-40 bg-gradient-to-r from-green-500 to-teal-500 relative">
+                        <div class="absolute inset-0 bg-black/30"></div>
+                        <img src="https://picsum.photos/seed/maintenance/800/400" alt="智能养护场景图片" class="w-full h-full object-cover mix-blend-overlay">
+                        <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded">
+                            活跃中
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-white mb-2 flex items-center">
+                            <i class="fa fa-wrench text-secondary mr-2"></i>
+                            智能养护
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4">基于结构健康监测数据，为道路养护提供科学依据，实现精准养护与预防性维护</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="text-xs bg-success/20 text-success px-2 py-1 rounded-full">养护计划</span>
+                            <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">病害预测</span>
+                            <span class="text-xs bg-info/20 text-info px-2 py-1 rounded-full">资产档案</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <i class="fa fa-clock-o mr-1"></i>
+                                    已对接 64 天
+                                </span>
+                            </div>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                查看详情 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 地图推送卡片 -->
+                <div class="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 card-hover"
+                     onclick="openSceneModal('map-push')"
+                     data-scene="map-push">
+                    <div class="h-40 bg-gradient-to-r from-blue-600 to-cyan-500 relative">
+                        <div class="absolute inset-0 bg-black/30"></div>
+                        <img src="https://picsum.photos/seed/insurance/800/400" alt="保险服务场景图片" class="w-full h-full object-cover mix-blend-overlay">
+                        <div class="absolute top-4 right-4 bg-gray-700/80 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded">
+                            待接入
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-white mb-2 flex items-center">
+                            <i class="fa fa-shield text-blue-400 mr-2"></i>
+                            地图推送
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4">为高德地图、百度地图推送风险路段信息</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="text-xs bg-info/20 text-info px-2 py-1 rounded-full">风险提醒</span>
+                            <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">数据推送</span>
+                            <span class="text-xs bg-warning/20 text-warning px-2 py-1 rounded-full">地图推送</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <i class="fa fa-clock-o mr-1"></i>
+                                    待接入
+                                </span>
+                            </div>
+                            <button class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">
+                                接入配置 <i class="fa fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据接口信息 -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fa fa-code text-primary mr-2"></i>
+                    数据接口信息
+                </h2>
+                <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200">
+                    <i class="fa fa-download mr-1"></i> 下载API文档
+                </button>
+            </div>
+
+            <div class="bg-gray-800/30 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">接口名称</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">接口路径</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">版本</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">方法</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">状态</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-800/50 divide-y divide-gray-700">
+                            <tr class="hover:bg-gray-700/50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">道路状态实时查询</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v2/road/status/realtime</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">v2.1.0</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900/30 text-blue-400">GET</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400">正常</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:text-primary/80 mr-3">文档</button>
+                                    <button class="hover:text-primary/80">测试</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-700/50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">交通流量分析</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v2/traffic/flow/analysis</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">v2.0.0</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900/30 text-blue-400">GET</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400">正常</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:text-primary/80 mr-3">文档</button>
+                                    <button class="hover:text-primary/80">测试</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-700/50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">养护计划查询</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v1/maintenance/plan</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">v1.0.0</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900/30 text-blue-400">GET</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400">正常</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:text-primary/80 mr-3">文档</button>
+                                    <button class="hover:text-primary/80">测试</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-700/50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">道路病害预测</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v1/road/disease/prediction</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">v1.1.0</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-900/30 text-purple-400">POST</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-900/30 text-yellow-400">限流</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:text-primary/80 mr-3">文档</button>
+                                    <button class="hover:text-primary/80">测试</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-700/50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">预警信息推送</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v1/warning/push</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">v1.2.0</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-900/30 text-purple-400">POST</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900/30 text-blue-400">测试中</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:text-primary/80 mr-3">文档</button>
+                                    <button class="hover:text-primary/80">测试</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最近对接日志 -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fa fa-history text-primary mr-2"></i>
+                    最近对接日志
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <select class="bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 pr-8 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>全部场景</option>
+                            <option>车路协同</option>
+                            <option>智能养护</option>
+                            <option>地图推送</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <i class="fa fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                    <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200">
+                        <i class="fa fa-search mr-1"></i> 筛选
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-gray-800/30 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">时间</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">场景</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">接口</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">请求IP</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">状态</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">耗时</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-gray-800/50 divide-y divide-gray-700">
+                            <tr class="log-item">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2025-06-12 15:32:45</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-white">车路协同</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v2/road/status/realtime</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">103.24.56.xxx</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400">成功</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">128ms</td>
+                            </tr>
+                            <tr class="log-item">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2025-06-12 15:31:22</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-white">智能养护</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v1/maintenance/plan</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">192.168.1.xxx</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400">成功</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">86ms</td>
+                            </tr>
+                            <tr class="log-item">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2025-06-12 15:29:11</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-white">车路协同</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v2/traffic/flow/analysis</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">103.24.56.xxx</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400">成功</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">215ms</td>
+                            </tr>
+                            <tr class="log-item">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2025-06-12 15:27:55</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-white">智能养护</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v1/road/disease/prediction</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">192.168.1.xxx</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-900/30 text-red-400">失败</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">452ms</td>
+                            </tr>
+                            <tr class="log-item">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2025-06-12 15:25:33</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-white">地图推送</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-mono">/api/v1/warning/push</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">210.12.34.xxx</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-900/30 text-yellow-400">超时</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">5000ms</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-6 py-4 bg-gray-800 border-t border-gray-700 flex items-center justify-between">
+                    <div class="text-sm text-gray-400">
+                        显示 1 至 5 条，共 256 条记录
+                    </div>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-gray-800 text-gray-400 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-angle-left"></i>
+                        </button>
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-primary text-white">1</button>
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">2</button>
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">3</button>
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">4</button>
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">5</button>
+                        <button class="px-3 py-1 border border-gray-700 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">
+                            <i class="fa fa-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据对接统计 -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fa fa-bar-chart text-primary mr-2"></i>
+                    数据对接统计
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <select class="bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 pr-8 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option>最近 7 天</option>
+                            <option>最近 30 天</option>
+                            <option>最近 90 天</option>
+                            <option>今年</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <i class="fa fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                    <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200">
+                        <i class="fa fa-download mr-1"></i> 导出
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-800/30 rounded-xl p-6 border border-gray-700 lg:col-span-2">
+                    <h3 class="text-lg font-semibold text-white mb-4">数据请求量趋势</h3>
+                    <div class="h-80">
+                        <canvas id="requestTrendChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800/30 rounded-xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-semibold text-white mb-4">业务场景分布</h3>
+                    <div class="h-80">
+                        <canvas id="sceneDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 业务场景详情模态框 -->
+    <div id="sceneModal" class="fixed inset-0 z-50 hidden">
+        <!-- 背景遮罩 -->
+        <div class="absolute inset-0 bg-black/70 modal-backdrop" onclick="closeSceneModal()"></div>
+        
+        <!-- 模态框内容 -->
+        <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            <div class="bg-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all fade-in">
+                <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+                    <h3 id="modalTitle" class="text-xl font-semibold text-white">场景详情</h3>
+                    <button onclick="closeSceneModal()" class="text-gray-400 hover:text-white">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <!-- 车路协同详情 -->
+                    <div id="vehicle-road-details" class="scene-details hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">对接状态</p>
+                                <p class="text-white font-medium">活跃中</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">授权时间</p>
+                                <p class="text-white font-medium">2025-02-01 09:30:00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">到期时间</p>
+                                <p class="text-white font-medium">2026-02-01 09:30:00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">对接天数</p>
+                                <p class="text-white font-medium">128 天</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">授权秘钥</p>
+                            <div class="bg-gray-900 rounded-lg p-3 font-mono text-sm flex items-center justify-between">
+                                <span id="vehicle-road-api-key">vr_8f7e6d5c4b3a210ff7e6d5c4b3a210f</span>
+                                <div class="flex items-center">
+                                    <button class="text-primary hover:text-primary/80 mr-3" onclick="copyToClipboard('vehicle-road-api-key')">
+                                        <i class="fa fa-copy"></i> 复制
+                                    </button>
+                                    <button class="text-warning hover:text-warning/80" onclick="updateApiKey('vehicle-road-api-key', 'vr')">
+                                        <i class="fa fa-refresh"></i> 更新
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">对接企业</p>
+                            <p class="text-white font-medium">智慧交通科技有限公司</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">已对接接口</p>
+                            <ul class="space-y-2">
+                                <li class="bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="font-medium text-white">road_status_realtime (v2.1.0)</div>
+                                    <div class="text-sm text-gray-400 font-mono">/api/v2/road/status/realtime</div>
+                                </li>
+                                <li class="bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="font-medium text-white">traffic_flow_analysis (v2.0.0)</div>
+                                    <div class="text-sm text-gray-400 font-mono">/api/v2/traffic/flow/analysis</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-400 text-sm mb-2">最近对接记录</p>
+                            <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v2/road/status/realtime</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:32:45 · 103.24.56.xxx · 128ms</div>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v2/traffic/flow/analysis</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:29:11 · 103.24.56.xxx · 215ms</div>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v2/road/status/realtime</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:10:23 · 103.24.56.xxx · 142ms</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 智能养护详情 -->
+                    <div id="intelligent-maintenance-details" class="scene-details hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">对接状态</p>
+                                <p class="text-white font-medium">活跃中</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">授权时间</p>
+                                <p class="text-white font-medium">2025-04-07 14:20:00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">到期时间</p>
+                                <p class="text-white font-medium">2026-04-07 14:20:00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">对接天数</p>
+                                <p class="text-white font-medium">64 天</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">授权秘钥</p>
+                            <div class="bg-gray-900 rounded-lg p-3 font-mono text-sm flex items-center justify-between">
+                                <span id="intelligent-maintenance-api-key">im_9a8b7c6d5e4f3210aa9b8c7d6e5f432</span>
+                                <div class="flex items-center">
+                                    <button class="text-primary hover:text-primary/80 mr-3" onclick="copyToClipboard('intelligent-maintenance-api-key')">
+                                        <i class="fa fa-copy"></i> 复制
+                                    </button>
+                                    <button class="text-warning hover:text-warning/80" onclick="updateApiKey('intelligent-maintenance-api-key', 'im')">
+                                        <i class="fa fa-refresh"></i> 更新
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">对接企业</p>
+                            <p class="text-white font-medium">城市道路养护集团</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">已对接接口</p>
+                            <ul class="space-y-2">
+                                <li class="bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="font-medium text-white">maintenance_plan (v1.0.0)</div>
+                                    <div class="text-sm text-gray-400 font-mono">/api/v1/maintenance/plan</div>
+                                </li>
+                                <li class="bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="font-medium text-white">road_disease_prediction (v1.1.0)</div>
+                                    <div class="text-sm text-gray-400 font-mono">/api/v1/road/disease/prediction</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-400 text-sm mb-2">最近对接记录</p>
+                            <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v1/maintenance/plan</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:31:22 · 192.168.1.xxx · 86ms</div>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v1/road/disease/prediction</span>
+                                        <span class="text-danger">失败</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:27:55 · 192.168.1.xxx · 452ms</div>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v1/maintenance/plan</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:15:47 · 192.168.1.xxx · 93ms</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 地图推送详情 -->
+                    <div id="map-push-details" class="scene-details hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">对接状态</p>
+                                <p class="text-white font-medium">待接入</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">申请时间</p>
+                                <p class="text-white font-medium">2025-06-05 10:15:00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">预计完成时间</p>
+                                <p class="text-white font-medium">2025-06-15 前</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">审核状态</p>
+                                <p class="text-white font-medium">已通过审核</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">临时秘钥（测试用）</p>
+                            <div class="bg-gray-900 rounded-lg p-3 font-mono text-sm flex items-center justify-between">
+                                <span id="map-push-api-key">mp_5f4e3d2c1b0a9876ff5e4d3c2b1a09</span>
+                                <div class="flex items-center">
+                                    <button class="text-primary hover:text-primary/80 mr-3" onclick="copyToClipboard('map-push-api-key')">
+                                        <i class="fa fa-copy"></i> 复制
+                                    </button>
+                                    <button class="text-warning hover:text-warning/80" onclick="updateApiKey('map-push-api-key', 'mp')">
+                                        <i class="fa fa-refresh"></i> 更新
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">对接企业</p>
+                            <p class="text-white font-medium">高德地图信息技术有限公司</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">申请对接接口</p>
+                            <ul class="space-y-2">
+                                <li class="bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="font-medium text-white">early_warning_push (v1.2.0)</div>
+                                    <div class="text-sm text-gray-400 font-mono">/api/v1/warning/push</div>
+                                </li>
+                                <li class="bg-gray-900/50 p-3 rounded-lg">
+                                    <div class="font-medium text-white">road_construction_info (v1.0.0)</div>
+                                    <div class="text-sm text-gray-400 font-mono">/api/v1/road/construction/info</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-400 text-sm mb-2">测试对接记录</p>
+                            <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v1/warning/push</span>
+                                        <span class="text-warning">超时</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 15:25:33 · 210.12.34.xxx · 5000ms</div>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v1/warning/push</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 14:58:12 · 210.12.34.xxx · 326ms</div>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-white">/api/v1/road/construction/info</span>
+                                        <span class="text-success">成功</span>
+                                    </div>
+                                    <div class="text-gray-400 mt-1">2025-06-12 14:45:09 · 210.12.34.xxx · 187ms</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 border-t border-gray-700 flex justify-end">
+                    <button onclick="closeSceneModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 mr-3">
+                        关闭
+                    </button>
+                    <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                        编辑配置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交互脚本 -->
+    <script>
+        // 打开场景详情模态框
+        function openSceneModal(sceneType) {
+            // 隐藏所有详情内容
+            document.querySelectorAll('.scene-details').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // 显示对应场景的详情
+            document.getElementById(`${sceneType}-details`).classList.remove('hidden');
+            
+            // 设置模态框标题
+            const titles = {
+                'vehicle-road': '车路协同 - 详情',
+                'intelligent-maintenance': '智能养护 - 详情',
+                'map-push': '地图推送 - 详情'
+            };
+            document.getElementById('modalTitle').textContent = titles[sceneType];
+            
+            // 显示模态框
+            document.getElementById('sceneModal').classList.remove('hidden');
+            // 阻止页面滚动
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭场景详情模态框
+        function closeSceneModal() {
+            document.getElementById('sceneModal').classList.add('hidden');
+            // 恢复页面滚动
+            document.body.style.overflow = '';
+        }
+        
+        // 复制到剪贴板功能
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // 显示复制成功提示
+                showToast('秘钥已复制到剪贴板');
+            }).catch(err => {
+                console.error('无法复制文本: ', err);
+                showToast('复制失败，请手动复制', 'error');
+            });
+        }
+        
+        // 更新API密钥
+        function updateApiKey(elementId, prefix) {
+            const element = document.getElementById(elementId);
+            
+            // 生成新的API密钥（保持与原格式一致）
+            const chars = 'abcdef0123456789';
+            let newKey = prefix + '_';
+            
+            // 生成30个随机字符（与原长度一致）
+            for (let i = 0; i < 30; i++) {
+                newKey += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            // 添加过渡动画效果
+            element.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+            setTimeout(() => {
+                element.textContent = newKey;
+                element.classList.remove('opacity-0');
+                showToast('API密钥已更新');
+            }, 300);
+        }
+        
+        // 显示提示消息
+        function showToast(message, type = 'success') {
+            // 创建toast元素
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 transition-all duration-300 transform translate-y-10 opacity-0`;
+            
+            // 根据类型设置样式
+            if (type === 'success') {
+                toast.classList.add('bg-success', 'text-white');
+                toast.innerHTML = `<i class="fa fa-check mr-2"></i>${message}`;
+            } else {
+                toast.classList.add('bg-danger', 'text-white');
+                toast.innerHTML = `<i class="fa fa-exclamation mr-2"></i>${message}`;
+            }
+            
+            // 添加到页面
+            document.body.appendChild(toast);
+            
+            // 显示动画
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 点击模态框外部关闭
+        document.getElementById('sceneModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSceneModal();
+            }
+        });
+        
+        // 按ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !document.getElementById('sceneModal').classList.contains('hidden')) {
+                closeSceneModal();
+            }
+        });
+        
+        // 初始化图表
+        window.addEventListener('load', function() {
+            // 数据请求量趋势图
+            const trendCtx = document.getElementById('requestTrendChart');
+            if (trendCtx) {
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1日', '2日', '3日', '4日', '5日', '6日', '7日'],
+                        datasets: [{
+                            label: '请求量',
+                            data: [15000, 21000, 18000, 24000, 23000, 27000, 30000],
+                            borderColor: '#165DFF',
+                            backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'rgba(255, 255, 255, 0.7)' } },
+                            x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'rgba(255, 255, 255, 0.7)' } }
+                        },
+                        plugins: { legend: { labels: { color: 'rgba(255, 255, 255, 0.7)' } } }
+                    }
+                });
+            }
+            
+            // 业务场景分布图
+            const distributionCtx = document.getElementById('sceneDistributionChart');
+            if (distributionCtx) {
+                new Chart(distributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['车路协同', '智能养护', '地图推送', '其他'],
+                        datasets: [{
+                            data: [35, 25, 15, 25],
+                            backgroundColor: ['#165DFF', '#36CFC9', '#722ED1', '#86909C']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { color: 'rgba(255, 255, 255, 0.7)' } } }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
